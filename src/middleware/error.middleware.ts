@@ -23,35 +23,38 @@ const getCustomErrorMessage = (issue: ZodIssue): CustomErrorMessage => {
   return { path, message };
 };
 
-export const errorHandler: ErrorRequestHandler = async (
-  err,
+export const errorHandler: ErrorRequestHandler = (
+  err: any,
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): void => {
   if (err instanceof ZodError) {
     const customErrors: CustomErrorMessage[] = err.issues.map(
       getCustomErrorMessage
     );
 
-    return res.status(400).json({
+    res.status(400).json({
       message: "Bad Request",
       errors: customErrors,
     });
+    return;
   }
 
   if (err instanceof HttpError) {
-    return res.status(err.statusCode).json({
+    res.status(err.statusCode).json({
       message: "An error has occurred",
       error: err.message,
     });
+    return;
   }
 
   if (err instanceof Error) {
-    return res.status(500).json({
+    res.status(500).json({
       message: "Internal Server Error",
       error: err.message,
     });
+    return;
   }
 
   next(err);
