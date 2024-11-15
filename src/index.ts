@@ -1,15 +1,13 @@
-import express from "express";
-import prisma from "./prismaClient";
+import express, { Application } from "express";
+import prisma from "./config/prismaClient";
+import { config } from "./config";
+import { errorHandler } from "./middleware/errorHandler";
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const init = async () => {
+  const app: Application = express();
+  config.verifyConfig();
 
-app.use(express.json());
+  app.use(errorHandler);
+};
 
-app.get("/", (req, res) => {
-  res.send("Hello, World!");
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+init();
